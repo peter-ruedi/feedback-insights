@@ -16,7 +16,7 @@ from datasets import load_dataset
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset", default="yelp_review_full")
+    parser.add_argument("--dataset", default="Yelp/yelp_review_full")
     parser.add_argument("--split", default="train")
     parser.add_argument("--n", type=int, default=3000)
     parser.add_argument("--seed", type=int, default=42)
