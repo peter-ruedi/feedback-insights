@@ -5,13 +5,25 @@ on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: feedback
+          POSTGRES_PASSWORD: feedback
+          POSTGRES_DB: feedback
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U feedback"
+          --health-interval 2s --health-retries 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      # Current tests need only pytest; skip the heavy ML dependencies for speed.
-      - run: pip install pytest
-      - run: python -m pytest -q
+      # Everything the tests import, minus sentence-transformers (large; tests don't load the model).
+      - run: pip install pytest httpx fastapi "psycopg[binary]" pgvector numpy
+      - run: python -m pytest -v
         env:
           PYTHONPATH: .
+          TEST_DATABASE_URL: postgresql://feedback:feedback@localhost:5432/feedback
