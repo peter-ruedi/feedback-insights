@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 
 import pytest
 
-from feedback_insights.ingest import parse_rows, read_csv
+from setup.ingest import parse_rows, read_csv
 
 
 def test_cleans_whitespace_and_escaped_newlines():

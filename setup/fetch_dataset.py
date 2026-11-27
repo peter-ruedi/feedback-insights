@@ -1,7 +1,7 @@
 """Download a random sample of public reviews from Hugging Face as a CSV.
 
     pip install -e ".[fetch]"
-    python scripts/fetch_dataset.py --n 3000 --out data/yelp_sample.csv
+    python -m setup.fetch_dataset --n 3000 --out data/yelp_sample.csv
 
 Default dataset: yelp_review_full (public Yelp reviews, labels 0-4 = 1-5 stars).
 Swap in any dataset with a text column; adjust the column mapping below.

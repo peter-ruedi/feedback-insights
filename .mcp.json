@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "feedback-insights": {
+      "type": "stdio",
+      "command": ".venv/bin/python",
+      "args": ["-m", "feedback_insights.mcp_server"]
+    }
+  }
+}

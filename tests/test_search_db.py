@@ -10,6 +10,8 @@ import os
 
 import pytest
 
+from feedback_insights.db import comments as comments_db
+
 URL = os.environ.get("TEST_DATABASE_URL")
 pytestmark = pytest.mark.skipif(not URL, reason="TEST_DATABASE_URL not set")
 
@@ -45,16 +47,24 @@ def conn():
 
 
 def test_returns_nearest_first(conn):
-    from feedback_insights.search import search_by_vector
 
-    hits = search_by_vector(conn, unit(1, 0), k=3)
+    hits = comments_db.nearest(conn, unit(1, 0), k=3)
     assert [h.id for h in hits] == [1, 2, 3]
     assert hits[0].distance == pytest.approx(0, abs=1e-5)
     assert hits[0].distance < hits[1].distance < hits[2].distance
 
 
 def test_respects_k_and_skips_rows_without_embeddings(conn):
-    from feedback_insights.search import search_by_vector
 
-    assert [h.id for h in search_by_vector(conn, unit(0, 1), k=2)] == [3, 2]
-    assert 4 not in [h.id for h in search_by_vector(conn, unit(1, 1), k=10)]
+    assert [h.id for h in comments_db.nearest(conn, unit(0, 1), k=2)] == [3, 2]
+    assert 4 not in [h.id for h in comments_db.nearest(conn, unit(1, 1), k=10)]
+
+
+def test_stats_counts_totals_and_ratings(conn):
+
+    conn.execute("ALTER TABLE comments ADD COLUMN source TEXT DEFAULT 'test'")
+    stats = comments_db.stats(conn)
+    assert stats.total_comments == 4
+    assert stats.embedded_comments == 3
+    assert stats.by_rating == {"2": 1, "3": 1, "4": 1, "5": 1}
+    assert stats.sources == ["test"]

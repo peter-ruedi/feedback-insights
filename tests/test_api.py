@@ -4,8 +4,7 @@ pytest.importorskip("fastapi")
 from fastapi.testclient import TestClient  # noqa: E402
 
 from feedback_insights.api import Deps, create_app  # noqa: E402
-from feedback_insights.search import Hit  # noqa: E402
-from feedback_insights.summarize import Answer, Theme  # noqa: E402
+from feedback_insights.models.feedback import Hit, Answer, Theme  # noqa: E402
 
 HITS = [
     Hit(id=7, body="Too pricey for what you get.", rating=2, distance=0.1),

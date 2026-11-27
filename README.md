@@ -2,6 +2,8 @@
 
 Ask plain-English questions about thousands of open-ended comments ("What do people say about pricing?") and get themes backed by the actual comments they came from. Also exposed as an MCP server so Claude can query it.
 
+![Claude Code answering a question through the Feedback Insights MCP server](docs/mcp-claude-code.png)
+
 > Work in progress: data loading and embeddings are done; the `/ask` endpoint, MCP server and UI come next.
 
 ## Run it locally
@@ -35,9 +37,9 @@ sed -i 's/localhost:5433/localhost:5432/' .env  # point at your Postgres
 python -m venv .venv && source .venv/bin/activate
 pip install -e ".[fetch,dev]"
 
-python scripts/fetch_dataset.py --n 3000   # public Yelp reviews -> data/yelp_sample.csv
-python -m feedback_insights.ingest data/yelp_sample.csv --source yelp_review_full
-python -m feedback_insights.embed          # local all-MiniLM-L6-v2, no API key needed
+python -m setup.fetch_dataset --n 3000     # public Yelp reviews -> data/yelp_sample.csv
+python -m setup.ingest data/yelp_sample.csv --source yelp_review_full
+python -m setup.embed                      # local all-MiniLM-L6-v2, no API key needed
 
 pytest
 ```

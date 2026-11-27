@@ -7,4 +7,4 @@ test:
 	TEST_DATABASE_URL=postgresql://feedback:feedback@localhost:5432/feedback pytest -v
 
 embed:
-	python -m feedback_insights.embed
+	python -m setup.embed

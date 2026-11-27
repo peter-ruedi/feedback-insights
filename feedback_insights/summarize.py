@@ -7,10 +7,9 @@ structured data rather than free text we have to parse.
 from __future__ import annotations
 
 import time
-from dataclasses import dataclass, field
 from html import escape
 
-from .search import Hit
+from .models.feedback import Answer, Hit, Theme
 
 SYSTEM_PROMPT = """You analyze open-ended customer feedback.
 You get a question and a set of comments, each with an id.
@@ -45,20 +44,6 @@ THEMES_TOOL = {
         "required": ["themes"],
     },
 }
-
-
-@dataclass
-class Theme:
-    title: str
-    summary: str
-    comments: list[Hit]
-
-
-@dataclass
-class Answer:
-    themes: list[Theme]
-    note: str | None = None
-    usage: dict = field(default_factory=dict)
 
 
 def build_user_message(question: str, hits: list[Hit]) -> str:

@@ -22,7 +22,7 @@ jobs:
         with:
           python-version: "3.12"
       # Everything the tests import, minus sentence-transformers (large; tests don't load the model).
-      - run: pip install pytest httpx fastapi "psycopg[binary]" pgvector numpy
+      - run: pip install pytest httpx fastapi "psycopg[binary]" pgvector numpy "mcp>=2,<3"
       - run: python -m pytest -v
         env:
           PYTHONPATH: .

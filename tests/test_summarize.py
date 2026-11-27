@@ -1,6 +1,6 @@
 from types import SimpleNamespace
 
-from feedback_insights.search import Hit
+from feedback_insights.models.feedback import Hit
 from feedback_insights.summarize import build_user_message, parse_tool_input, summarize
 
 HITS = [

@@ -12,42 +12,13 @@ import time
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, Field
 
 from .. import config
-from ..summarize import Answer
+from ..models.api import AskRequest, AskResponse, CommentOut, ThemeOut
+from ..models.feedback import Answer
 
 log = logging.getLogger("feedback_insights")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
-
-
-# ---- request / response shapes -------------------------------------------
-
-class AskRequest(BaseModel):
-    question: str = Field(min_length=3, max_length=500)
-    k: int = Field(20, ge=1, le=100, description="How many comments to retrieve")
-
-
-class CommentOut(BaseModel):
-    id: int
-    body: str
-    rating: int | None
-    similarity: float = Field(description="1 = same meaning as the question, 0 = unrelated")
-
-
-class ThemeOut(BaseModel):
-    title: str
-    summary: str
-    comments: list[CommentOut]
-
-
-class AskResponse(BaseModel):
-    question: str
-    comments: list[CommentOut] = Field(description="Retrieved comments, most relevant first")
-    themes: list[ThemeOut] = Field(description="Claude's themes; empty when summaries are off")
-    summarized: bool
-    note: str | None = None
-    usage: dict
 
 
 # ---- dependencies (swapped for fakes in tests) ---------------------------
@@ -61,17 +32,14 @@ class Deps:
 
 
 def real_deps() -> Deps:
-    import psycopg
-    from pgvector.psycopg import register_vector
-
-    from ..embed import get_model
+    from ..db import connect
+    from ..embeddings import get_model
     from ..search import search
 
     get_model()  # load the embedding model now, not on the first request
 
     def search_fn(question, k):
-        with psycopg.connect(config.DATABASE_URL) as conn:
-            register_vector(conn)
+        with connect() as conn:
             return search(conn, question, k)
 
     if not config.ANTHROPIC_API_KEY:
